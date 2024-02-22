@@ -24,7 +24,7 @@ func HandleGetTasks(w http.ResponseWriter, r *http.Request) {
 	// filter options
 	findOptions := base_repository.FindFilterOptions{
 		Page:     1,
-		PageSize: 1,
+		PageSize: 10,
 	}
 
 	// add filter options if provided in query parameters

@@ -32,6 +32,7 @@ func (s *Server) Run() {
 
 	// Register middlewares.
 	wrappedServer := middleware.LoggerMiddleware(router.Server)
+	wrappedServer = middleware.CorsMiddleware(wrappedServer)
 
 	// Setup server with options.
 	httpServer := &http.Server{

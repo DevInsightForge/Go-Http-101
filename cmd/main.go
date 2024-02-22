@@ -20,6 +20,6 @@ func main() {
 	}
 
 	// Initialize API server
-	server := api.NewServer(config.ServerPort)
+	server := api.NewServer(config.ServerAddr, config.ServerPort)
 	server.Run()
 }

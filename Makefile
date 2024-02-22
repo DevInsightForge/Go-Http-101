@@ -2,6 +2,7 @@
 GOCMD=go
 GOBUILD=$(GOCMD) build
 GOCLEAN=$(GOCMD) clean
+GOMOD=$(GOCMD) mod
 
 # Name of the executable
 BINARY_NAME=gohttp101
@@ -15,6 +16,10 @@ SOURCES=$(wildcard *.go) $(wildcard */*.go)
 
 all: clean build-cross
 
+deps:
+	$(GOMOD) download
+	$(GOMOD) verify
+
 build: 
 	$(GOBUILD) -o $(OUT_PATH)$(BINARY_NAME) $(ENTRY_PATH)
 
@@ -22,7 +27,7 @@ clean:
 	$(GOCLEAN)
 	rm -rf $(OUT_PATH)
 
-run: build
+run: 
 	$(OUT_PATH)$(BINARY_NAME)
 
 run-dev:

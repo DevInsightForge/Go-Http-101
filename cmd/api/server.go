@@ -15,17 +15,21 @@ import (
 )
 
 type Server struct {
+	addr string
 	port string
 }
 
-func NewServer(port string) *Server {
-	return &Server{port: port}
+func NewServer(addr string, port string) *Server {
+	return &Server{
+		addr: addr,
+		port: port,
+	}
 }
 
 // Run initializes the server and listens on the specified port.
 func (s *Server) Run() {
 	router := httpserver.NewRouter()
-	addr := fmt.Sprintf("localhost%s", s.port)
+	fullAddr := fmt.Sprintf("%s%s", s.addr, s.port)
 
 	// Register endpoints.
 	routersetup.New(router).RegisterTaskEndpoints()
@@ -36,18 +40,18 @@ func (s *Server) Run() {
 
 	// Setup server with options.
 	httpServer := &http.Server{
-		Addr:    addr,
+		Addr:    fullAddr,
 		Handler: wrappedServer,
 	}
 
 	// Running server in a goroutine to allow graceful shutdown.
 	go func() {
 		if err := httpServer.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("Could not listen on %s: %v\n", addr, err)
+			log.Fatalf("Could not listen on %s: %v\n", fullAddr, err)
 		}
 	}()
 
-	log.Printf("Server is running at http://localhost%s\n", s.port)
+	log.Printf("Server is running at http://%s\n", fullAddr)
 
 	// Handle graceful shutdown
 	sigChan := make(chan os.Signal, 1)

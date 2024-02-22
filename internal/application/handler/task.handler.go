@@ -2,22 +2,22 @@ package task_handler
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
 	"time"
 
-	common_dto "http101/internal/application/dto/common"
 	"http101/internal/application/model"
 	"http101/internal/application/repository"
 	base_repository "http101/internal/application/repository/base"
+	response_utility "http101/internal/application/utility"
 )
 
 func HandleGetTasks(w http.ResponseWriter, r *http.Request) {
 	taskRepo, repoErr := repository.NewTaskRepository()
 	if repoErr != nil {
-		sendErrorResponse(w, repoErr, "Failed to initialize task repository", http.StatusInternalServerError)
+		errResp := response_utility.NewErrorResult("Failed to initialize task repository", repoErr.Error())
+		response_utility.WriteJsonResponse(w, http.StatusBadRequest, errResp)
 		return
 	}
 
@@ -58,24 +58,27 @@ func HandleGetTasks(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if tasks, err := taskRepo.FindAllWithOptions(findOptions); err == nil {
+	if tasks, taskErr := taskRepo.FindAllWithOptions(findOptions); taskErr == nil {
 		totalRecords, countErr := taskRepo.Count()
 		if countErr != nil {
-			sendErrorResponse(w, countErr, "Failed to count tasks", http.StatusInternalServerError)
+			errResp := response_utility.NewErrorResult("Failed to count tasks", countErr.Error())
+			response_utility.WriteJsonResponse(w, http.StatusBadRequest, errResp)
 			return
 		}
 
-		response := common_dto.NewPaginatedResultDto[[]model.TaskModel](totalRecords, findOptions.Page, findOptions.PageSize, tasks)
-		sendJSONResponse(w, http.StatusOK, response)
+		response := response_utility.NewPaginatedResultDto[[]model.TaskModel](totalRecords, findOptions.Page, findOptions.PageSize, tasks)
+		response_utility.WriteJsonResponse(w, http.StatusOK, response)
 	} else {
-		sendErrorResponse(w, err, "Failed to retrieve tasks", http.StatusInternalServerError)
+		errResp := response_utility.NewErrorResult("Failed to retrieve tasks", taskErr.Error())
+		response_utility.WriteJsonResponse(w, http.StatusBadRequest, errResp)
 	}
 }
 
 func HandleAddTask(w http.ResponseWriter, r *http.Request) {
 	var requestBody model.TaskModel
 	if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
-		sendErrorResponse(w, err, "Failed to decode JSON", http.StatusBadRequest)
+		errResp := response_utility.NewErrorResult("Failed to decode JSON", err.Error())
+		response_utility.WriteJsonResponse(w, http.StatusBadRequest, errResp)
 		return
 	}
 
@@ -84,31 +87,19 @@ func HandleAddTask(w http.ResponseWriter, r *http.Request) {
 
 	taskRepo, repoErr := repository.NewTaskRepository()
 	if repoErr != nil {
-		sendErrorResponse(w, repoErr, "Failed to initialize task repository", http.StatusInternalServerError)
+		errResp := response_utility.NewErrorResult("Failed to initialize task repository", repoErr.Error())
+		response_utility.WriteJsonResponse(w, http.StatusBadRequest, errResp)
 		return
 	}
 
 	insertedID, err := taskRepo.Create(requestBody)
 	if err != nil {
-		sendErrorResponse(w, err, "Failed to insert task", http.StatusInternalServerError)
+		errResp := response_utility.NewErrorResult("Failed to insert task", err.Error())
+		response_utility.WriteJsonResponse(w, http.StatusBadRequest, errResp)
 		return
 	}
 
 	requestBody.ID = insertedID
-
-	sendJSONResponse(w, http.StatusCreated, requestBody)
-}
-
-func sendJSONResponse(w http.ResponseWriter, statusCode int, data interface{}) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(data)
-}
-
-func sendErrorResponse(w http.ResponseWriter, err error, message string, statusCode int) {
-	log.Println(err.Error())
-	errorReponse := common_dto.NewErrorResult(message, err.Error())
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(statusCode)
-	json.NewEncoder(w).Encode(errorReponse)
+	response := response_utility.NewSuccessDataResult[model.TaskModel](requestBody)
+	response_utility.WriteJsonResponse(w, http.StatusOK, response)
 }

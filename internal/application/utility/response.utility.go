@@ -1,6 +1,10 @@
-package common_dto
+package response_utility
 
-import "math"
+import (
+	"encoding/json"
+	"math"
+	"net/http"
+)
 
 type ResultDto[T any] struct {
 	Success         bool   `json:"success"`
@@ -42,4 +46,10 @@ func NewPaginatedResultDto[T any](totalRecords int64, currentPage, pageSize int,
 		HasPreviousPage: hasPreviousPage,
 		HasNextPage:     hasNextPage,
 	}
+}
+
+func WriteJsonResponse(w http.ResponseWriter, statusCode int, data any) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(statusCode)
+	json.NewEncoder(w).Encode(data)
 }

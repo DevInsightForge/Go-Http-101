@@ -43,6 +43,10 @@ pkg/
 *.swp
 *.swo
 *~
+Dockerfile
+.dockerignore
+docker-compose.yml
+docker-compose.*.yml
 
 # Operating System Files
 .DS_Store

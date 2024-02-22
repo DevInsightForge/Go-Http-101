@@ -15,7 +15,7 @@ type MongoDBConfig struct {
 	DatabaseName  string
 }
 
-func InitMongoDB(ConnectionURI string, DatabaseName  string) error {
+func InitMongoDB(ConnectionURI string, DatabaseName string) error {
 	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(ConnectionURI))
 	if err != nil {
 		return err
@@ -26,8 +26,6 @@ func InitMongoDB(ConnectionURI string, DatabaseName  string) error {
 	}
 
 	dbConn = client.Database(DatabaseName)
-
-	log.Println("Connection to MongoDB was initialized successfully")
 	return nil
 }
 

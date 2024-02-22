@@ -11,6 +11,7 @@ import (
 
 	httpserver "http101/cmd/api/http-server"
 	routersetup "http101/cmd/api/router-setup"
+	"http101/internal/application/middleware"
 )
 
 type Server struct {
@@ -23,16 +24,19 @@ func NewServer(port string) *Server {
 
 // Run initializes the server and listens on the specified port.
 func (s *Server) Run() {
-	server := httpserver.NewRouter()
+	router := httpserver.NewRouter()
 	addr := fmt.Sprintf("localhost%s", s.port)
 
 	// Register endpoints.
-	routersetup.New(server).RegisterTaskEndpoints()
+	routersetup.New(router).RegisterTaskEndpoints()
+
+	// Register middlewares.
+	wrappedServer := middleware.LoggerMiddleware(router.Server)
 
 	// Setup server with options.
 	httpServer := &http.Server{
 		Addr:    addr,
-		Handler: server.Mux,
+		Handler: wrappedServer,
 	}
 
 	// Running server in a goroutine to allow graceful shutdown.

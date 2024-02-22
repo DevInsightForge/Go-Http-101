@@ -1,46 +1,31 @@
 package httpserver
 
 import (
+	"fmt"
 	"net/http"
-	"strings"
 )
 
-type Middleware func(http.HandlerFunc) http.HandlerFunc
-
 type Router struct {
-	Mux         *http.ServeMux
-	middlewares []Middleware
-	prefix      string
+	Server *http.ServeMux
+	prefix string
 }
 
 // NewRouter creates a new Router instance
 func NewRouter() *Router {
 	return &Router{
-		Mux:    http.NewServeMux(),
-		prefix: "",
+		Server: http.NewServeMux(),
+		prefix: "/api",
 	}
 }
 
-func (r *Router) Handle(path string, handler http.HandlerFunc) {
-	newPath := strings.Split(path, " ")[0] + " " + r.prefix + strings.Split(path, " ")[1]
-	r.Mux.HandleFunc(newPath, r.applyMiddleware(handler))
+func (r *Router) Handle(method string, path string, handler http.HandlerFunc) {
+	newPath := fmt.Sprintf("%s %s", method, r.prefix+path)
+	r.Server.HandleFunc(newPath, handler)
 }
 
 func (r *Router) Group(prefix string) *Router {
 	return &Router{
-		Mux:    r.Mux,
+		Server: r.Server,
 		prefix: r.prefix + prefix,
 	}
-}
-
-func (r *Router) Use(middleware ...Middleware) {
-	r.middlewares = append(r.middlewares, middleware...)
-}
-
-func (r *Router) applyMiddleware(handler http.HandlerFunc) http.HandlerFunc {
-	finalHandler := handler
-	for i := len(r.middlewares) - 1; i >= 0; i-- {
-		finalHandler = r.middlewares[i](finalHandler)
-	}
-	return finalHandler
 }

@@ -25,6 +25,8 @@ func HandleGetTasks(w http.ResponseWriter, r *http.Request) {
 	findOptions := base_repository.FindFilterOptions{
 		Page:     1,
 		PageSize: 10,
+		SortBy:   "_id",
+		SortDir:  -1,
 	}
 
 	// add filter options if provided in query parameters

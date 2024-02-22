@@ -65,11 +65,7 @@ func HandleGetTasks(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		interfaceSlice := make([]interface{}, len(tasks))
-		for i, task := range tasks {
-			interfaceSlice[i] = task
-		}
-		response := common_dto.NewPaginatedResultDto(totalRecords, findOptions.Page, findOptions.PageSize, interfaceSlice)
+		response := common_dto.NewPaginatedResultDto[[]model.TaskModel](totalRecords, findOptions.Page, findOptions.PageSize, tasks)
 		sendJSONResponse(w, http.StatusOK, response)
 	} else {
 		sendErrorResponse(w, err, "Failed to retrieve tasks", http.StatusInternalServerError)

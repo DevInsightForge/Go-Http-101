@@ -47,12 +47,12 @@ func (s *Server) Run() {
 
 	log.Printf("Server is running at http://localhost%s\n", s.port)
 
-	signals := make(chan os.Signal, 1)
-	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
+	// Handle graceful shutdown
+	sigChan := make(chan os.Signal, 1)
+	signal.Notify(sigChan, os.Interrupt, syscall.SIGTERM)
 
-	<-signals
-
-	log.Println("Shutting down server...")
+	sig := <-sigChan
+	log.Println("Received terminate, graceful shutdown...", sig)
 
 	if err := httpServer.Shutdown(context.TODO()); err != nil {
 		log.Fatalf("Could not gracefully shutdown the server: %v\n", err)

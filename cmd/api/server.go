@@ -8,23 +8,13 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
-	"time"
 
 	"http101/internal/application/endpoint"
+	"http101/internal/application/middleware"
 )
 
 type Server struct {
 	port string
-}
-
-func loggingMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		startTime := time.Now()
-		log.Printf("Before %s", r.URL.String())
-		next.ServeHTTP(w, r)
-		elapsedTime := time.Since(startTime)
-		log.Printf("After %s - elapsed: %s", r.URL.String(), elapsedTime)
-	})
 }
 
 func NewServer(port string) *Server {
@@ -40,7 +30,7 @@ func (s *Server) Run() {
 	endpoint.RegisterTaskEndpoints(server)
 
 	// Wrap server with logging middleware.
-	wrappedServer := loggingMiddleware(server)
+	wrappedServer := middleware.LoggerMiddleware(server)
 
 	// Setup server with options.
 	httpServer := &http.Server{

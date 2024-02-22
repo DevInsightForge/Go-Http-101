@@ -9,8 +9,8 @@ import (
 	"os/signal"
 	"syscall"
 
-	"http101/internal/application/endpoint"
-	"http101/internal/application/middleware"
+	httpserver "http101/cmd/api/http-server"
+	routersetup "http101/cmd/api/router-setup"
 )
 
 type Server struct {
@@ -23,19 +23,16 @@ func NewServer(port string) *Server {
 
 // Run initializes the server and listens on the specified port.
 func (s *Server) Run() {
-	server := http.NewServeMux()
+	server := httpserver.NewRouter()
 	addr := fmt.Sprintf("localhost%s", s.port)
 
 	// Register endpoints.
-	endpoint.RegisterTaskEndpoints(server)
-
-	// Wrap server with logging middleware.
-	wrappedServer := middleware.LoggerMiddleware(server)
+	routersetup.New(server).RegisterTaskEndpoints()
 
 	// Setup server with options.
 	httpServer := &http.Server{
 		Addr:    addr,
-		Handler: wrappedServer,
+		Handler: server.Mux,
 	}
 
 	// Running server in a goroutine to allow graceful shutdown.

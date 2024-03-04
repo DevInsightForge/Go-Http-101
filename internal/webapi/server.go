@@ -3,7 +3,6 @@ package webapi
 import (
 	"context"
 	"fmt"
-	"http101/internal/webapi/endpoint"
 	"log"
 	"net/http"
 	"os"
@@ -13,6 +12,8 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+
+	"http101/internal/webapi/endpoint"
 )
 
 type Server struct {

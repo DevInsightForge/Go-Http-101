@@ -5,7 +5,6 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
-	"time"
 
 	response_utility "http101/internal/application/utility"
 	"http101/internal/domain/model"
@@ -93,9 +92,7 @@ func (s *TaskService) HandleAddTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	requestBody.CreatedAt = time.Now()
-	requestBody.UpdatedAt = time.Now()
-
+	requestBody.SetAuditFieldsBeforeCreate("testUserId")
 	insertedID, err := s.TaskRepo.Create(requestBody)
 	if err != nil {
 		errResp := response_utility.NewErrorResult("Failed to insert task", err.Error())

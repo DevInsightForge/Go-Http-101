@@ -14,14 +14,16 @@ type BaseModel struct {
 	UpdatedBy string             `bson:"updatedBy" json:"updatedBy"`
 }
 
-func (bm *BaseModel) SetAuditFieldsBeforeCreate(createdBy string) error {
+func (bm *BaseModel) SetAuditFieldsBeforeCreate(auditUserId string) error {
 	bm.CreatedAt = time.Now()
-	bm.CreatedBy = createdBy
+	bm.CreatedBy = auditUserId
+	bm.UpdatedAt = time.Now()
+	bm.UpdatedBy = auditUserId
 	return nil
 }
 
-func (bm *BaseModel) SetAuditFieldsBeforeUpdate(updatedBy string) error {
+func (bm *BaseModel) SetAuditFieldsBeforeUpdate(auditUserId string) error {
 	bm.UpdatedAt = time.Now()
-	bm.UpdatedBy = updatedBy
+	bm.UpdatedBy = auditUserId
 	return nil
 }

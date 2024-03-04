@@ -9,7 +9,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 
-	"http101/internal/application/database"
+	"http101/internal/infrastructure/database"
 )
 
 type BaseRepository[T any] struct {

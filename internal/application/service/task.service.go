@@ -1,4 +1,4 @@
-package task_handler
+package service
 
 import (
 	"encoding/json"
@@ -7,20 +7,26 @@ import (
 	"strings"
 	"time"
 
-	"http101/internal/application/model"
-	"http101/internal/application/repository"
-	base_repository "http101/internal/application/repository/base"
 	response_utility "http101/internal/application/utility"
+	"http101/internal/domain/model"
+	"http101/internal/infrastructure/repository"
+	base_repository "http101/internal/infrastructure/repository/base"
 )
 
-func HandleGetTasks(w http.ResponseWriter, r *http.Request) {
-	taskRepo, repoErr := repository.NewTaskRepository()
-	if repoErr != nil {
-		errResp := response_utility.NewErrorResult("Failed to initialize task repository", repoErr.Error())
-		response_utility.WriteJsonResponse(w, http.StatusBadRequest, errResp)
-		return
-	}
+// TaskService struct to encapsulate task handlers
+type TaskService struct {
+	TaskRepo *repository.TaskRepository
+}
 
+// NewTaskService creates a new instance of TaskService
+func NewTaskService(taskRepo *repository.TaskRepository) *TaskService {
+	return &TaskService{
+		TaskRepo: taskRepo,
+	}
+}
+
+// HandleGetTasks method for getting tasks
+func (s *TaskService) HandleGetTasks(w http.ResponseWriter, r *http.Request) {
 	// filter options
 	findOptions := base_repository.FindFilterOptions{
 		Page:     1,
@@ -60,8 +66,8 @@ func HandleGetTasks(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if tasks, taskErr := taskRepo.FindAllWithOptions(findOptions); taskErr == nil {
-		totalRecords, countErr := taskRepo.Count()
+	if tasks, taskErr := s.TaskRepo.FindAllWithOptions(findOptions); taskErr == nil {
+		totalRecords, countErr := s.TaskRepo.Count()
 		if countErr != nil {
 			errResp := response_utility.NewErrorResult("Failed to count tasks", countErr.Error())
 			response_utility.WriteJsonResponse(w, http.StatusBadRequest, errResp)
@@ -76,7 +82,8 @@ func HandleGetTasks(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func HandleAddTask(w http.ResponseWriter, r *http.Request) {
+// HandleAddTask method for adding a new task
+func (s *TaskService) HandleAddTask(w http.ResponseWriter, r *http.Request) {
 	var requestBody model.TaskModel
 	if err := json.NewDecoder(r.Body).Decode(&requestBody); err != nil {
 		errResp := response_utility.NewErrorResult("Failed to decode JSON", err.Error())
@@ -87,14 +94,7 @@ func HandleAddTask(w http.ResponseWriter, r *http.Request) {
 	requestBody.CreatedAt = time.Now()
 	requestBody.UpdatedAt = time.Now()
 
-	taskRepo, repoErr := repository.NewTaskRepository()
-	if repoErr != nil {
-		errResp := response_utility.NewErrorResult("Failed to initialize task repository", repoErr.Error())
-		response_utility.WriteJsonResponse(w, http.StatusBadRequest, errResp)
-		return
-	}
-
-	insertedID, err := taskRepo.Create(requestBody)
+	insertedID, err := s.TaskRepo.Create(requestBody)
 	if err != nil {
 		errResp := response_utility.NewErrorResult("Failed to insert task", err.Error())
 		response_utility.WriteJsonResponse(w, http.StatusBadRequest, errResp)

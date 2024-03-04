@@ -1,18 +1,18 @@
 package repository
 
 import (
-	"http101/internal/application/model"
-	base_repository "http101/internal/application/repository/base"
+	"http101/internal/domain/model"
+	base_repository "http101/internal/infrastructure/repository/base"
 )
 
 type TaskRepository struct {
 	*base_repository.BaseRepository[model.TaskModel]
 }
 
-func NewTaskRepository() (*TaskRepository, error) {
+func NewTaskRepository() *TaskRepository {
 	repo, err := base_repository.NewBaseRepository[model.TaskModel]("tasks")
 	if err != nil {
-		return nil, err
+		panic(err)
 	}
-	return &TaskRepository{repo}, nil
+	return &TaskRepository{repo}
 }

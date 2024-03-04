@@ -3,23 +3,23 @@ package main
 import (
 	"log"
 
-	"http101/cmd/api"
 	"http101/internal/application/config"
-	"http101/internal/application/database"
+	"http101/internal/infrastructure/database"
+	"http101/internal/webapi"
 )
 
 func main() {
 	config, err := config.LoadConfig()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("Error initializing configuration variables: %v", err)
 	}
 
 	// Initialize MongoDB
 	if err := database.InitMongoDB(config.MongoURI, config.MongoDbName); err != nil {
-		log.Fatalf("Error initializing MongoDB: %v", err)
+		log.Fatalf("Error initializing database: %v", err)
 	}
 
 	// Initialize API server
-	server := api.NewServer(config.ServerAddr, config.ServerPort)
+	server := webapi.NewServer(config.ServerAddr, config.ServerPort)
 	server.Run()
 }

@@ -9,7 +9,7 @@ RUN set -Eeux && \
 
 COPY . /app/
 RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
-    go build -trimpath -o gohttp101 cmd/main.go
+    go build -trimpath -o gohttp101 cmd/api/main.go
 
 # Final stage
 FROM scratch

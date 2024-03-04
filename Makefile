@@ -8,7 +8,7 @@ GOMOD=$(GOCMD) mod
 BINARY_NAME=gohttp101
 
 # Path names
-ENTRY_PATH=./cmd/main.go
+ENTRY_PATH=./cmd/api/main.go
 OUT_PATH=./bin/
 
 # Source files
@@ -30,7 +30,7 @@ clean:
 run: 
 	$(OUT_PATH)$(BINARY_NAME)
 
-run-dev:
+dev:
 	wgo run $(ENTRY_PATH)
 
 build-cross: 

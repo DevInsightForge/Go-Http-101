@@ -19,7 +19,9 @@ type TaskService struct {
 }
 
 // NewTaskService creates a new instance of TaskService
-func NewTaskService(taskRepo *repository.TaskRepository) *TaskService {
+func NewTaskService() *TaskService {
+	taskRepo := repository.NewTaskRepository()
+
 	return &TaskService{
 		TaskRepo: taskRepo,
 	}

@@ -2,6 +2,7 @@ package utility
 
 import (
 	"encoding/json"
+	"http101/internal/application/config"
 	"math"
 	"net/http"
 )
@@ -28,7 +29,14 @@ func NewSuccessMessageResult[T any](message string) *ResultDto[T] {
 }
 
 func NewErrorResult(message, err string) *ResultDto[interface{}] {
-	return &ResultDto[interface{}]{Success: false, Message: &message, Error: &err}
+	result := &ResultDto[interface{}]{Success: false, Message: &message}
+
+	cfg := config.GetConfig()
+	if cfg.Environment == "development" {
+		result.Error = &err
+	}
+
+	return result
 }
 
 func NewPaginatedResultDto[T any](totalRecords int64, currentPage, pageSize int, data T) *ResultDto[T] {

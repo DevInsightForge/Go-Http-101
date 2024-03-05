@@ -1,6 +1,7 @@
 # Builder stage
 FROM golang:1.22-alpine AS builder
 WORKDIR /app
+ENV ENVIRONMENT production
 
 COPY go.mod go.sum /app/
 RUN set -Eeux && \

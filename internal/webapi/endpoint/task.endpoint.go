@@ -13,7 +13,11 @@ func (rs TaskEndpoint) Routes() chi.Router {
 	taskService := service.NewTaskService()
 
 	router.Get("/get-all", taskService.HandleGetTasks)
-	router.Post("/add-new", taskService.HandleAddTask)
+	router.Post("/create", taskService.HandleAddTask)
+	router.Route("/{taskId}", func(subRouter chi.Router) {
+		subRouter.Get("/get", taskService.HandleGetTaskById)
+		subRouter.Put("/update", taskService.HandleUpdateTaskById)
+	})
 
 	return router
 }

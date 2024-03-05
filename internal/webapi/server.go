@@ -12,6 +12,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
 
 	"http101/internal/application/config"
 	"http101/internal/webapi/endpoint"
@@ -37,6 +38,10 @@ func (s *Server) Run() {
 	handler.Use(middleware.RequestID)
 	handler.Use(middleware.Logger)
 	handler.Use(middleware.Recoverer)
+	handler.Use(cors.Handler(cors.Options{
+		AllowedOrigins: []string{"https://*", "http://*"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+	}))
 	handler.Use(middleware.Heartbeat("/"))
 
 	// API routes registration

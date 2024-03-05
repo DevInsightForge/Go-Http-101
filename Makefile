@@ -14,7 +14,7 @@ OUT_PATH=./bin/
 # Source files
 SOURCES=$(wildcard *.go) $(wildcard */*.go)
 
-all: clean build-cross
+all: clean build run
 
 deps:
 	$(GOMOD) download
@@ -27,7 +27,7 @@ clean:
 	$(GOCLEAN)
 	rm -rf $(OUT_PATH)
 
-run: 
+run:
 	$(OUT_PATH)$(BINARY_NAME)
 
 dev:

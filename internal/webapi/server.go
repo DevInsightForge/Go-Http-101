@@ -79,7 +79,7 @@ func (s *Server) Run() {
 		serverStopCtx()
 	}()
 
-	log.Printf("Server is running at http://%s\n", httpServer.Addr)
+	log.Printf("Server is running at http://%s\n", fullAddr)
 
 	// Run the server
 	err := httpServer.ListenAndServe()

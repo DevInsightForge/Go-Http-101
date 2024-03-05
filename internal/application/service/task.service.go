@@ -75,7 +75,7 @@ func (s *TaskService) HandleGetTasks(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		response := response_utility.NewPaginatedResultDto[[]model.TaskModel](totalRecords, findOptions.Page, findOptions.PageSize, tasks)
+		response := response_utility.NewPaginatedResultDto(totalRecords, findOptions.Page, findOptions.PageSize, tasks)
 		response_utility.WriteJsonResponse(w, http.StatusOK, response)
 	} else {
 		errResp := response_utility.NewErrorResult("Failed to retrieve tasks", taskErr.Error())
@@ -101,6 +101,6 @@ func (s *TaskService) HandleAddTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	requestBody.ID = insertedID
-	response := response_utility.NewSuccessDataResult[model.TaskModel](requestBody)
+	response := response_utility.NewSuccessDataResult(requestBody)
 	response_utility.WriteJsonResponse(w, http.StatusOK, response)
 }

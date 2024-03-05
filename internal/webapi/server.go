@@ -34,12 +34,10 @@ func (s *Server) Run() {
 	handler := chi.NewRouter()
 
 	// global middleware registration
+	handler.Use(middleware.RequestID)
 	handler.Use(middleware.Logger)
-
-	// health check endpoint
-	handler.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("OK!"))
-	})
+	handler.Use(middleware.Recoverer)
+	handler.Use(middleware.Heartbeat("/"))
 
 	// API routes registration
 	handler.Route("/api", func(apiRoute chi.Router) {

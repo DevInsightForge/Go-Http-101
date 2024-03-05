@@ -13,6 +13,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 
+	"http101/internal/application/config"
 	"http101/internal/webapi/endpoint"
 )
 
@@ -21,10 +22,11 @@ type Server struct {
 	port string
 }
 
-func NewServer(addr string, port string) *Server {
+func NewServer() *Server {
+	cfg := config.GetConfig()
 	return &Server{
-		addr: addr,
-		port: port,
+		addr: cfg.ServerAddr,
+		port: cfg.ServerPort,
 	}
 }
 

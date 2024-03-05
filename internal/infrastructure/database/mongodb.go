@@ -6,6 +6,8 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+
+	"http101/internal/application/config"
 )
 
 var dbConn *mongo.Database
@@ -15,8 +17,10 @@ type MongoDBConfig struct {
 	DatabaseName  string
 }
 
-func InitMongoDB(ConnectionURI string, DatabaseName string) error {
-	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(ConnectionURI))
+func InitMongoDB() error {
+	cfg := config.GetConfig()
+
+	client, err := mongo.Connect(context.Background(), options.Client().ApplyURI(cfg.MongoURI))
 	if err != nil {
 		return err
 	}
@@ -25,7 +29,7 @@ func InitMongoDB(ConnectionURI string, DatabaseName string) error {
 		return err
 	}
 
-	dbConn = client.Database(DatabaseName)
+	dbConn = client.Database(cfg.MongoDbName)
 	return nil
 }
 
@@ -33,5 +37,6 @@ func GetCollection(collectionName string) *mongo.Collection {
 	if dbConn == nil {
 		log.Fatal("Database connection is not initialized yet")
 	}
+
 	return dbConn.Collection(collectionName)
 }

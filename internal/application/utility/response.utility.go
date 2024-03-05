@@ -1,4 +1,4 @@
-package response_utility
+package utility
 
 import (
 	"encoding/json"

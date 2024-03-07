@@ -7,3 +7,13 @@ type TaskModel struct {
 	Name           string `bson:"name"`
 	Description    string `bson:"description"`
 }
+
+func (task *TaskModel) MapNewValues(dto TaskModel) *TaskModel {
+	if dto.Name != "" {
+		task.Name = dto.Name
+	}
+	if dto.Description != "" {
+		task.Description = dto.Description
+	}
+	return task
+}

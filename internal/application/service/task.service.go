@@ -10,7 +10,6 @@ import (
 	base_repository "http101/internal/infrastructure/repository/base"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/stroiman/go-automapper"
 )
 
 type TaskService struct {
@@ -104,15 +103,15 @@ func (s *TaskService) HandleUpdateTaskById(w http.ResponseWriter, r *http.Reques
 		return
 	}
 
-	automapper.MapLoose(requestBody, &oldTask)
-	requestBody.SetAuditFieldsBeforeUpdate("testUserId2")
+	oldTask.MapNewValues(requestBody)
+	oldTask.SetAuditFieldsBeforeUpdate("testUserId2")
 
-	if err := s.TaskRepo.Update(requestId, requestBody); err != nil {
+	if err := s.TaskRepo.Update(requestId, oldTask); err != nil {
 		errResp := utility.NewErrorResult("Failed to update task", err.Error())
 		utility.WriteJsonResponse(w, http.StatusBadRequest, errResp)
 		return
 	}
 
-	response := utility.NewSuccessDataResult(requestBody)
+	response := utility.NewSuccessDataResult(oldTask)
 	utility.WriteJsonResponse(w, http.StatusOK, response)
 }

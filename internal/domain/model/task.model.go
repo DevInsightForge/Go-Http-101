@@ -4,8 +4,8 @@ import "http101/internal/domain/base"
 
 type TaskModel struct {
 	base.BaseModel `bson:",inline"`
-	Name           string `bson:"name"`
-	Description    string `bson:"description"`
+	Name           string `bson:"name" json:"name"`
+	Description    string `bson:"description" json:"description"`
 }
 
 func (task *TaskModel) MapNewValues(dto TaskModel) *TaskModel {

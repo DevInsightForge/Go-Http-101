@@ -16,7 +16,9 @@ RUN GOOS=linux GOARCH=amd64 CGO_ENABLED=0 \
 FROM scratch
 WORKDIR /app
 
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 COPY --from=builder /app/gohttp101 /app/main
+
 ENV ADDRESS=0.0.0.0
 ENV PORT 4000
 EXPOSE 4000
